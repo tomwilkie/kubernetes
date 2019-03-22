@@ -34,6 +34,7 @@ type FileNameFlags struct {
 	Filenames *[]string
 	Kustomize *string
 	Recursive *bool
+	Plugin    *string
 }
 
 func (o *FileNameFlags) ToOptions() resource.FilenameOptions {
@@ -51,6 +52,9 @@ func (o *FileNameFlags) ToOptions() resource.FilenameOptions {
 	}
 	if o.Kustomize != nil {
 		options.Kustomize = *o.Kustomize
+	}
+	if o.Plugin != nil {
+		options.Plugin = *o.Plugin
 	}
 
 	return options
@@ -75,5 +79,9 @@ func (o *FileNameFlags) AddFlags(flags *pflag.FlagSet) {
 	if o.Kustomize != nil {
 		flags.StringVarP(o.Kustomize, "kustomize", "k", *o.Kustomize,
 			"Process a kustomization directory. This flag can't be used together with -f or -R.")
+	}
+	if o.Plugin != nil {
+		flags.StringVarP(o.Plugin, "plugin", "z", *o.Plugin,
+			"Plugin")
 	}
 }

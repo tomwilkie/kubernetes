@@ -1,0 +1,21 @@
+#!/bin/bash
+set -eu
+
+FILE=$1
+ENVDIR=$1
+
+while [ -n "$ENVDIR" -a "$(basename "$ENVDIR")" != "environments" ]; do
+    ENVDIR=$(dirname "$ENVDIR")
+done
+
+if [ -z "$ENVDIR" ]; then
+    echo "failed to find environments dir"
+    exit 1
+fi
+
+ENV=$(dirname "${FILE#"$ENVDIR/"}")
+
+(
+    cd "$ENVDIR"
+    ks show "$ENV"
+)

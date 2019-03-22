@@ -132,6 +132,7 @@ type FilenameOptions struct {
 	Filenames []string
 	Kustomize string
 	Recursive bool
+	Plugin    string
 }
 
 func (o *FilenameOptions) validate() []error {
@@ -146,8 +147,8 @@ func (o *FilenameOptions) validate() []error {
 }
 
 func (o *FilenameOptions) RequireFilenameOrKustomize() error {
-	if len(o.Filenames) == 0 && len(o.Kustomize) == 0 {
-		return fmt.Errorf("must specify one of -f and -k")
+	if len(o.Filenames) == 0 && len(o.Kustomize) == 0 && len(o.Plugin) == 0 {
+		return fmt.Errorf("must specify one of -f, -k or -p")
 	}
 	return nil
 }
@@ -241,6 +242,12 @@ func (b *Builder) FilenameParam(enforceNamespace bool, filenameOptions *Filename
 	if filenameOptions.Kustomize != "" {
 		b.paths = append(b.paths, &KustomizeVisitor{filenameOptions.Kustomize,
 			NewStreamVisitor(nil, b.mapper, filenameOptions.Kustomize, b.schema)})
+	}
+	if filenameOptions.Plugin != "" {
+		b.paths = append(b.paths, &PluginVisitor{
+			Path:          filenameOptions.Plugin,
+			StreamVisitor: NewStreamVisitor(nil, b.mapper, filenameOptions.Plugin, b.schema),
+		})
 	}
 
 	if enforceNamespace {
